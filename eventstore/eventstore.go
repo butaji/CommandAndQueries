@@ -29,7 +29,7 @@ type EventEnvelope struct {
 	Version int `json:"version"`
 }
 
-const Dir = "/Users/vbaum/Projects/EventStore/Storage/"
+const Dir = "/{put your path here}/EventStore/Storage/"
 
 type InMemEventStore struct {
 	Events map[string][]domain.Event
