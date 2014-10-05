@@ -1,7 +1,7 @@
 Simple CQRS example (polyglot edition)
 =============
 
-This project inspired by work of [Greg Young](https://twitter.com/gregyoung) https://github.com/gregoryyoung/m-r where he expaining simplest possible objects to keep in mind then you serve CQRS solution.
+This project inspired by work of [Greg Young](https://twitter.com/gregyoung)'s project https://github.com/gregoryyoung/m-r where he's expaining simplest possible objects to keep in mind then you serve CQRS solution.
 
 Implementations
 -------
@@ -17,8 +17,11 @@ Every new language will be in another next branch and include very similar solut
 Solution
 -----------
 
-Here I will try to describe in pseudo-code how each solution is represented:
+In this section I will try to describe in pseudo-code how each solution is represented:
 
+
+	```ruby
+	
 	app = Application.new #it's application (our working horse to serve every routine work)
 	
 	id = Id.new
