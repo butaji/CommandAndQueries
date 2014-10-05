@@ -20,8 +20,6 @@ Solution
 In this section I will try to describe in pseudo-code how each solution is represented:
 
 
-	```ruby
-	
 	app = Application.new #it's application (our working horse to serve every routine work)
 	
 	id = Id.new
