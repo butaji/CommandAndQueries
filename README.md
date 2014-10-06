@@ -1,7 +1,7 @@
 Simple CQRS example (polyglot edition)
 =============
 
-This project inspired by work of [Greg Young](https://twitter.com/gregyoung)'s project https://github.com/gregoryyoung/m-r where he's expaining simplest possible objects to keep in mind then you serve CQRS solution.
+This project inspired by [Greg Young](https://twitter.com/gregyoung)'s project https://github.com/gregoryyoung/m-r where he's expaining simplest possible objects to keep in mind then you serve CQRS solution.
 
 Implementations
 -------
