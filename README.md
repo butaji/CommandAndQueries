@@ -11,6 +11,7 @@ Currently this project implemented in:
 * [Java](https://github.com/butaji/CommandAndQueries/tree/java)
 * [Go lang](https://github.com/butaji/CommandAndQueries/tree/golang)
 * [Elixir](https://github.com/butaji/CommandAndQueries/tree/elixir)
+* [Swift](https://github.com/butaji/CommandAndQueries/tree/swift)
 
 Every new language will be in another next branch and include very similar solution to problem .
 
