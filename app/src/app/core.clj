@@ -65,6 +65,12 @@
 
     (def events ((eventstore :load) id))
 
+    (def cur_version (- (count events) 1))
+
+    (when (not= v cur_version)
+      (throw (Exception. (str "Concurrency failed for version " v " in reason of current version is " cur_version)))
+    )
+
     (def ev (apply merge e { :version (count events) }))
 
     (def data (conj
