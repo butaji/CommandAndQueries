@@ -138,6 +138,18 @@
   )
 })
 
+(defn get_id []
+  (def res (client/post (str "http://127.0.0.1:4000/res")
+      {
+        :body "{\"msg\": \"getting id\"}"
+        :content-type :json
+      }
+    )
+  )
+  ((res :trace-redirects) 1)
+)
+
+(def db_id (get_id))
 (def app {
 
   :send (fn [c]
@@ -150,12 +162,25 @@
   )
 
   :handle (fn [e]
+    (println e)
     (case (e :type)
-        (println e)
        :taskCreated (
+        (def t ((app :read) (e :id)))
+        (def t (apply merge t {
+          :version (e :version)
+          :id (e :id)
+          :title (e :title)
+        } ))
 
+
+        (client/patch db_id {
+          :form-params data
+          :content-type :json
+        })
         )
+
        :taskRenamed (
+
 
         )
        :taskCompleted (
@@ -166,22 +191,11 @@
   )
 
   :read (fn [id]
-    (println "app:read" id)
-    {:version 0}
+    (def data ((client/get db_id {:as :json}) :body))
+    (if (= (data :id) id) data {})
   )
 
 })
-
-(defn get_id []
-  (def res (client/post (str "http://127.0.0.1:4000/res")
-      {
-        :body "{\"msg\": \"getting id\"}"
-        :content-type :json
-      }
-    )
-  )
-  ((res :trace-redirects) 1)
-)
 
 (defn -main []
 
@@ -223,5 +237,6 @@
   ;        (println "waiting for v2")
   ;    ))
 
-  (println ((app :read) id))
+  (def item (app :read))
+  (println (item id))
 )
