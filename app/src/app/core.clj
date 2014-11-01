@@ -25,6 +25,7 @@
       {
         :id (t :id)
         :type :taskCompleted
+        :completed true
       }
     )
 
@@ -55,16 +56,20 @@
   :load (fn[id]
     ; (println "eventstore:load" id)
 
-    ((client/get id {:as :json}) :body)
+    (def res ((client/get id {:as :json}) :body))
+    (if res res ())
   )
 
   :save (fn[id e v]
     ; (println "eventstore:save" id e v)
 
     (def events ((eventstore :load) id))
-    (def data (list
+
+    (def ev (apply merge e { :version (count events) }))
+
+    (def data (conj
         events
-        (apply merge e { :version (count events) })
+        ev
       )
     )
 
@@ -73,6 +78,8 @@
       :content-type :json
     })
 
+    (println ev)
+    ev
   )
 
 })
@@ -88,7 +95,7 @@
 
     :publish (fn[e]
       (doall
-        (map #(% e) @listeners)))
+        (map #(future (% e)) @listeners)))
 })
 
 (def repo {
@@ -108,8 +115,8 @@
   :save (fn[id,e,v]
       ; (println "repo:save" id e v)
 
-      ((eventstore :save) id e v)
-      ((eventbus :publish) e)
+      (def ev ((eventstore :save) id e v))
+      ((eventbus :publish) ev)
   )
 
 })
@@ -139,9 +146,8 @@
 })
 
 (defn get_id []
-  (def res (client/post (str "http://127.0.0.1:4000/res")
+  (def res (client/post (str "http://jetdb.net/res")
       {
-        :body "{\"msg\": \"getting id\"}"
         :content-type :json
       }
     )
@@ -162,28 +168,45 @@
   )
 
   :handle (fn [e]
-    (println e)
+    ; (println e)
     (case (e :type)
        :taskCreated (
-        (def t ((app :read) (e :id)))
-        (def t (apply merge t {
-          :version (e :version)
-          :id (e :id)
-          :title (e :title)
-        } ))
+          (def t ((app :read) (e :id)))
+          (def t (apply merge t {
+            :version (e :version)
+            :id (e :id)
+            :title (e :title)
+          } ))
 
-
-        (client/patch db_id {
-          :form-params data
-          :content-type :json
-        })
+          (client/patch db_id {
+            :form-params t
+            :content-type :json
+          })
         )
 
        :taskRenamed (
+          (def t ((app :read) (e :id)))
+          (def t (apply merge t {
+            :version (e :version)
+            :title (e :title)
+          } ))
 
-
+          (client/patch db_id {
+            :form-params t
+            :content-type :json
+          })
         )
        :taskCompleted (
+          (def t ((app :read) (e :id)))
+          (def t (apply merge t {
+            :version (e :version)
+            :completed (e :completed)
+          } ))
+
+          (client/patch db_id {
+            :form-params t
+            :content-type :json
+          })
 
         )
     )
@@ -192,6 +215,7 @@
 
   :read (fn [id]
     (def data ((client/get db_id {:as :json}) :body))
+    (def data (if data data {}))
     (if (= (data :id) id) data {})
   )
 
@@ -212,9 +236,9 @@
     :version -1
   })
 
-  ;  (while (not (= ((app :read) id) :version)) 0) (do
-  ;        (println "waiting for v0")
-  ;    ))
+   (while (not (= (((app :read) id) :version) 0)) (do
+         (println "waiting for v0")
+     ))
 
   ((app :send) {
     :id id,
@@ -223,9 +247,9 @@
     :version 0
   })
 
-  ;  (while (not (= ((app :read) id) :version)) 1) (do
-  ;        (println "waiting for v1")
-  ;    ))
+   (while (not (= (((app :read) id) :version) 1)) (do
+        (println "waiting for v1")
+    ))
 
   ((app :send) {
     :id id,
@@ -233,10 +257,10 @@
     :version 1
   })
 
-  ;  (while (not (= ((app :read) id) :version)) 2) (do
-  ;        (println "waiting for v2")
-  ;    ))
+  (while (not (= (((app :read) id) :version) 2)) (do
+       (println "waiting for v2")
+   ))
 
-  (def item (app :read))
-  (println (item id))
+  (def item ((app :read) id))
+  (println item)
 )
