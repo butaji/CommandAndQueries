@@ -13,6 +13,7 @@ Currently this project implemented in:
 * [Elixir](https://github.com/butaji/CommandAndQueries/tree/elixir)
 * [Swift](https://github.com/butaji/CommandAndQueries/tree/swift)
 * [JavaScript (node.js)](https://github.com/butaji/CommandAndQueries/tree/JavaScript)
+* [Clojure](https://github.com/butaji/CommandAndQueries/blob/clojure/app/src/app/core.clj)
 
 Every new language will be in another next branch and include very similar solution to problem .
 
@@ -23,22 +24,21 @@ In this section I will try to describe in pseudo-code how each solution is repre
 
 
 	app = Application.new #it's application (our working horse to serve every routine work)
-	
-	id = Id.new
-	
-	app.send createTask id: id, title: "new title", version: -1
-	
-	wait_while app.read_by_id(id).version == 0 #we need this because event publishing is asynchronous and everything happens in a while
-	
-	app.send renameTask id: id, title: "new title 1", version: 0
-	
-	wait_while app.read_by_id(id).version == 1
-	
-	app.send completeTask id: id, version: 1
-	
-	wait_while app.read_by_id(id).version == 2
-	
-	task = app.read_by_id id
-	
-	print "Check out that everything is ok with our task #{task.title} #{task.completed}"
 
+	id = Id.new
+
+	app.send createTask id: id, title: "new title", version: -1
+
+	wait_while app.read_by_id(id).version == 0 #we need this because event publishing is asynchronous and everything happens in a while
+
+	app.send renameTask id: id, title: "new title 1", version: 0
+
+	wait_while app.read_by_id(id).version == 1
+
+	app.send completeTask id: id, version: 1
+
+	wait_while app.read_by_id(id).version == 2
+
+	task = app.read_by_id id
+
+	print "Check out that everything is ok with our task #{task.title} #{task.completed}"
